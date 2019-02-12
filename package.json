@@ -1,0 +1,22 @@
+{
+  "name": "weather-assessment",
+  "version": "1.0.0",
+  "description": "Technical Assessment for AppsFactory.de",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanpablob/weather-assessment.git"
+  },
+  "author": "juanpablob <m.juanpablob@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juanpablob/weather-assessment/issues"
+  },
+  "homepage": "https://github.com/juanpablob/weather-assessment#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
