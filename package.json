@@ -4,7 +4,7 @@
   "description": "Technical Assessment for AppsFactory.de",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/juanpablob/weather-assessment#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "express": "^4.16.4",
-    "got": "^9.6.0"
-  }
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {}
 }
