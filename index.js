@@ -17,6 +17,7 @@ app.use((req, res, next) => {
 app.use(express.static('public'));
 app.use(express.json());
 
+// "API" endpoint
 app.get('/api/weather/forecast', async (req, res, next) => {
 	let forecast = {
 		current: {},
@@ -30,6 +31,7 @@ app.get('/api/weather/forecast', async (req, res, next) => {
 			.then((response) => {
 				forecast.current = {
 					timestamp: response.data.dt,
+					datetime: response.data.dt_txt,
 					temperature: {
 						current: Math.round(response.data.main.temp),
 						min: Math.round(response.data.main.temp_min),
@@ -59,37 +61,76 @@ app.get('/api/weather/forecast', async (req, res, next) => {
 
 				response.data.list.forEach((item) => {
 					thisTimestamp = moment.unix(item.dt).format('DD-MM-YYYY');
-					// console.log('current item date: ' + moment.unix(item.dt).format('DD-MM-YYYY'));
 
 					// Skip results from today
 					if (thisTimestamp != moment().format('DD-MM-YYYY')) {
-						// Make the index an array
+						// Create the index as array if it doesn't exists
 						if (!forecast.daily[lastIndexPushed]) {
 							forecast.daily[lastIndexPushed] = [];
 						}
 
-						forecast.daily[lastIndexPushed].push({
-							timestamp: item.dt,
-							temperature: {
-								current: Math.round(item.main.temp),
-								min: Math.round(item.main.temp_min),
-								max: Math.round(item.main.temp_max),
-							},
-							weather: {
-								condition: item.weather[0].main,
-								description: item.weather[0].description,
-								icon: item.weather[0].icon,
-							},
-							wind: {
-								speed: item.wind.speed
-							}
-						});
+						// Push data to created the index
+						forecast.daily[lastIndexPushed].push(item);
 
+						// Plus 1 to index if the forecast date is different
 						if (lastTimestamp && lastTimestamp != thisTimestamp) {
 							lastIndexPushed++;
 						}
 
 						lastTimestamp = thisTimestamp;
+					}
+				});
+
+				forecast.daily.forEach((day) => {
+					console.log('---');
+					console.log('*** DAY ***');
+					console.log('---');
+
+					day.forEach((item) => {
+						console.log(moment.unix(item.dt).format());
+						console.log('Min: ' + item.main.temp_min);
+						console.log('Max: ' + item.main.temp_max);
+					});
+				});
+
+				// Arrange daily forecast
+				forecast.daily.forEach((day, index) => {
+					// Find highest and lowest (temperature) forecast, so it became the "Weather condition" of the day
+					let	peak = {
+								lowestIndex: 0,
+								highestIndex: 0
+							},
+							latestTempFound = null;
+
+					day.forEach((item, index) => {
+						if (item.main.temp_max > latestTempFound) {
+							peak.highestIndex = index;
+						}
+
+						if (item.main.temp_min < latestTempFound) {
+							peak.lowestIndex = index;
+						}
+
+						latestTempFound = item.main.temp;
+					});
+
+					// Redefine the daily array, taking the temp_min from the first hourly forecast and temp_max from the last
+					// and using the "highest" forecast found before as the weather condition
+					forecast.daily[index] = {
+						timestamp: day[0].dt,
+						datetime: day[0].dt_txt,
+						temperature: {
+							min: Math.round(day[peak.lowestIndex].main.temp_min),
+							max: Math.round(day[peak.highestIndex].main.temp_max)
+						},
+						weather: {
+							condition: day[peak.highestIndex].weather[0].main,
+							description: day[peak.highestIndex].weather[0].description,
+							icon: day[peak.highestIndex].weather[0].icon
+						},
+						wind: {
+							speed: Math.round(day[peak.highestIndex].wind.speed)
+						}
 					}
 				});
 			})
