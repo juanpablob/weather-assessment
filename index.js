@@ -48,7 +48,8 @@ app.get('/api/weather/forecast', async (req, res, next) => {
 				};
 			})
 			.catch((error) => {
-				// res.send('error');
+				res.statusCode = 404;
+				res.send('error').end();
 			});
 
 		// Get forecast for the next 5 days
@@ -121,9 +122,6 @@ app.get('/api/weather/forecast', async (req, res, next) => {
 						}
 					}
 				});
-			})
-			.catch((error) => {
-				// res.send('error');
 			});
 
 		res.header('Access-Control-Allow-Origin', '*');
