@@ -81,18 +81,6 @@ app.get('/api/weather/forecast', async (req, res, next) => {
 					}
 				});
 
-				forecast.daily.forEach((day) => {
-					console.log('---');
-					console.log('*** DAY ***');
-					console.log('---');
-
-					day.forEach((item) => {
-						console.log(moment.unix(item.dt).format());
-						console.log('Min: ' + item.main.temp_min);
-						console.log('Max: ' + item.main.temp_max);
-					});
-				});
-
 				// Arrange daily forecast
 				forecast.daily.forEach((day, index) => {
 					// Find highest and lowest (temperature) forecast, so it became the "Weather condition" of the day
